@@ -1,29 +1,48 @@
 <template>
-  <div class="question-card">
-    <div class="question-header">
-      <span class="question-label">Question</span>
-      <div class="question-pulse" />
+  <div class="qcard-wrap">
+
+    <!-- HUD bar -->
+    <div class="hud">
+      <div class="hud-score">
+        <span class="hud-label">SCORE</span>
+        <span class="hud-val">{{ score }}</span>
+      </div>
+      <div class="hud-progress">
+        <span class="hud-label">Q {{ current }} / {{ total }}</span>
+        <div class="progress-track">
+          <div class="progress-fill" :style="{ width: progressPct + '%' }" />
+        </div>
+      </div>
     </div>
 
-    <p class="question-text">{{ question.question }}</p>
+    <!-- Card -->
+    <div class="question-card">
+      <div class="question-header">
+        <span class="question-label">Question {{ current }}</span>
+        <div class="question-pulse" />
+      </div>
 
-    <div class="answers-grid">
-      <button
-        v-for="(answer, index) in question.answers"
-        :key="index"
-        class="answer-btn"
-        :class="{
-          'answer-correct': answered && index === question.correct,
-          'answer-wrong':   answered && index === selectedIndex && index !== question.correct,
-          'answer-idle':    answered && index !== question.correct && index !== selectedIndex,
-        }"
-        :disabled="answered"
-        @click="handleAnswer(index)"
-      >
-        <span class="answer-letter">{{ letters[index] }}</span>
-        <span class="answer-text">{{ answer }}</span>
-      </button>
+      <p class="question-text">{{ question.question }}</p>
+
+      <div class="answers-grid">
+        <button
+          v-for="(answer, index) in question.answers"
+          :key="index"
+          class="answer-btn"
+          :class="{
+            'answer-correct': answered && index === question.correct,
+            'answer-wrong':   answered && index === selectedIndex && index !== question.correct,
+            'answer-idle':    answered && index !== question.correct && index !== selectedIndex,
+          }"
+          :disabled="answered"
+          @click="handleAnswer(index)"
+        >
+          <span class="answer-letter">{{ letters[index] }}</span>
+          <span class="answer-text">{{ answer }}</span>
+        </button>
+      </div>
     </div>
+
   </div>
 </template>
 
@@ -32,36 +51,38 @@ export default {
   name: 'QuestionCard',
 
   props: {
-    question: {
-      type: Object,
-      required: true,
-      // Shape: { question: String, answers: Array, correct: Number }
-    },
+    question: { type: Object,  required: true },
+    current:  { type: Number,  default: 1 },
+    total:    { type: Number,  default: 10 },
+    score:    { type: Number,  default: 0 },
   },
 
   emits: ['answer'],
 
   data() {
     return {
-      answered: false,
+      answered:      false,
       selectedIndex: null,
-      letters: ['A', 'B', 'C', 'D'],
+      letters:       ['A', 'B', 'C', 'D'],
     }
+  },
+
+  computed: {
+    progressPct() {
+      return ((this.current - 1) / this.total) * 100
+    },
   },
 
   methods: {
     handleAnswer(index) {
       if (this.answered) return
-
-      this.answered = true
+      this.answered      = true
       this.selectedIndex = index
-
-      const isCorrect = index === this.question.correct
+      const isCorrect    = index === this.question.correct
 
       setTimeout(() => {
         this.$emit('answer', isCorrect)
-        // Reset highlight state after emitting
-        this.answered = false
+        this.answered      = false
         this.selectedIndex = null
       }, 1000)
     },
@@ -70,19 +91,82 @@ export default {
 </script>
 
 <style scoped>
-@import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500&display=swap');
+.qcard-wrap {
+  width: 100%;
+  max-width: 640px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  animation: fadeUp 0.4s ease both;
+}
 
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── HUD ──────────────────────────────────────────── */
+.hud {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0 0.25rem;
+}
+
+.hud-score {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.hud-label {
+  font-family: var(--font-head);
+  font-size: 0.45rem;
+  color: var(--muted);
+  letter-spacing: 0.12em;
+}
+
+.hud-val {
+  font-family: var(--font-head);
+  font-size: 0.85rem;
+  color: var(--accent);
+  text-shadow: 0 0 10px rgba(0,229,255,0.5);
+}
+
+.hud-progress {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.35rem;
+}
+
+.progress-track {
+  width: 100%;
+  height: 3px;
+  background: var(--border);
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+  border-radius: 99px;
+  transition: width 0.4s ease;
+  box-shadow: 0 0 8px rgba(0,229,255,0.6);
+}
+
+/* ── Card ─────────────────────────────────────────── */
 .question-card {
-  font-family: 'DM Sans', sans-serif;
-  background: #0f1117;
-  border: 1px solid #1e2130;
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: 20px;
   padding: 2rem 2.25rem 2.25rem;
-  max-width: 640px;
-  width: 100%;
   box-shadow:
-    0 0 0 1px rgba(255, 255, 255, 0.04),
-    0 24px 64px rgba(0, 0, 0, 0.5);
+    0 0 0 1px rgba(255,255,255,0.03),
+    0 24px 64px rgba(0,0,0,0.5);
 }
 
 /* ── Header ───────────────────────────────────────── */
@@ -94,19 +178,18 @@ export default {
 }
 
 .question-label {
-  font-family: 'Syne', sans-serif;
-  font-size: 0.7rem;
-  font-weight: 800;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: #6c6fff;
+  font-family: var(--font-head);
+  font-size: 0.5rem;
+  letter-spacing: 0.15em;
+  color: var(--accent);
 }
 
 .question-pulse {
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: #6c6fff;
+  background: var(--accent);
+  box-shadow: 0 0 6px var(--accent);
   animation: pulse 1.8s ease-in-out infinite;
 }
 
@@ -117,61 +200,49 @@ export default {
 
 /* ── Question text ────────────────────────────────── */
 .question-text {
-  font-family: 'Syne', sans-serif;
-  font-size: 1.3rem;
-  font-weight: 700;
+  font-family: var(--font-body);
+  font-size: 1.2rem;
+  font-weight: 600;
   color: #f0f0f5;
-  line-height: 1.45;
+  line-height: 1.5;
   margin: 0 0 1.75rem;
 }
 
-/* ── Answers grid ─────────────────────────────────── */
+/* ── Answers ──────────────────────────────────────── */
 .answers-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 0.75rem;
 }
 
-/* ── Answer button base ───────────────────────────── */
 .answer-btn {
   display: flex;
   align-items: center;
   gap: 0.75rem;
   padding: 0.85rem 1rem;
-  background: #181b27;
-  border: 1px solid #272b3a;
+  background: #0d1020;
+  border: 1px solid var(--border);
   border-radius: 12px;
-  color: #c8cad8;
-  font-family: 'DM Sans', sans-serif;
+  color: var(--text);
+  font-family: var(--font-body);
   font-size: 0.9rem;
   font-weight: 500;
   text-align: left;
   cursor: pointer;
-  transition:
-    background 0.15s ease,
-    border-color 0.15s ease,
-    color 0.15s ease,
-    transform 0.1s ease,
-    box-shadow 0.15s ease;
+  transition: background 0.15s, border-color 0.15s, color 0.15s, transform 0.1s, box-shadow 0.15s;
 }
 
 .answer-btn:not(:disabled):hover {
-  background: #1f2235;
-  border-color: #6c6fff;
-  color: #ffffff;
+  background: #141828;
+  border-color: var(--accent);
+  color: #fff;
   transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(108, 111, 255, 0.18);
+  box-shadow: 0 6px 20px rgba(0,229,255,0.15);
 }
 
-.answer-btn:not(:disabled):active {
-  transform: translateY(0);
-}
+.answer-btn:not(:disabled):active { transform: translateY(0); }
+.answer-btn:disabled { cursor: not-allowed; }
 
-.answer-btn:disabled {
-  cursor: not-allowed;
-}
-
-/* ── Letter badge ─────────────────────────────────── */
 .answer-letter {
   display: inline-flex;
   align-items: center;
@@ -180,47 +251,35 @@ export default {
   height: 26px;
   flex-shrink: 0;
   border-radius: 7px;
-  background: #272b3a;
-  font-family: 'Syne', sans-serif;
-  font-size: 0.7rem;
-  font-weight: 800;
-  color: #6c6fff;
-  letter-spacing: 0;
-  transition: background 0.15s ease, color 0.15s ease;
+  background: var(--border);
+  font-family: var(--font-head);
+  font-size: 0.5rem;
+  color: var(--accent);
+  transition: background 0.15s, color 0.15s;
 }
 
-/* ── Correct state ────────────────────────────────── */
+/* ── Correct ──────────────────────────────────────── */
 .answer-correct {
-  background: #0d2b1f !important;
-  border-color: #22c55e !important;
-  color: #4ade80 !important;
-  box-shadow: 0 0 18px rgba(34, 197, 94, 0.2) !important;
+  background: #021f0f !important;
+  border-color: var(--correct) !important;
+  color: var(--correct) !important;
+  box-shadow: 0 0 20px rgba(0,255,153,0.2) !important;
   animation: pop 0.25s ease;
 }
+.answer-correct .answer-letter { background: var(--correct); color: #021f0f; }
 
-.answer-correct .answer-letter {
-  background: #22c55e;
-  color: #0d2b1f;
-}
-
-/* ── Wrong state ──────────────────────────────────── */
+/* ── Wrong ────────────────────────────────────────── */
 .answer-wrong {
-  background: #2b0f0f !important;
-  border-color: #ef4444 !important;
-  color: #f87171 !important;
-  box-shadow: 0 0 18px rgba(239, 68, 68, 0.2) !important;
+  background: #1f0202 !important;
+  border-color: var(--wrong) !important;
+  color: var(--wrong) !important;
+  box-shadow: 0 0 20px rgba(255,60,60,0.2) !important;
   animation: shake 0.35s ease;
 }
+.answer-wrong .answer-letter { background: var(--wrong); color: #1f0202; }
 
-.answer-wrong .answer-letter {
-  background: #ef4444;
-  color: #2b0f0f;
-}
-
-/* ── Dimmed idle state ────────────────────────────── */
-.answer-idle {
-  opacity: 0.35;
-}
+/* ── Idle ─────────────────────────────────────────── */
+.answer-idle { opacity: 0.3; }
 
 /* ── Animations ───────────────────────────────────── */
 @keyframes pop {
@@ -237,15 +296,12 @@ export default {
   80%       { transform: translateX(4px); }
 }
 
-/* ── Responsive ───────────────────────────────────── */
 @media (max-width: 480px) {
-  .answers-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .question-text {
-    font-size: 1.1rem;
-  }
+  .answers-grid { grid-template-columns: 1fr; }
+  .question-text { font-size: 1rem; }
+  .question-card { padding: 1.5rem; }
 }
 </style>
+
+
 

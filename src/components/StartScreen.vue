@@ -1,224 +1,192 @@
 <template>
   <div class="start-screen">
-    <!-- Animated background grid -->
-    <div class="grid-bg" aria-hidden="true"></div>
-
-    <!-- Floating decorative orbs -->
-    <div class="orb orb-1" aria-hidden="true"></div>
-    <div class="orb orb-2" aria-hidden="true"></div>
-
-    <div class="content">
-      <div class="badge">⚡ Ready to play?</div>
-
-      <h1 class="title">
-        <span class="title-quiz">Quiz</span><span class="title-blitz">Blitz</span>
-      </h1>
-
-      <p class="tagline">10 questions. 30 seconds each.<br>How fast can you think?</p>
-
-      <button class="play-btn" @click="$emit('start')" type="button">
-        <span class="play-btn__text">Play</span>
-        <span class="play-btn__icon" aria-hidden="true">▶</span>
-      </button>
+    <div class="logo-wrap">
+      <div class="logo-glow" />
+      <h1 class="logo">QUIZ<span class="logo-accent">BLITZ</span></h1>
+      <p class="tagline">10 questions. No second chances.</p>
     </div>
+
+    <ul class="rules">
+      <li v-for="(rule, i) in rules" :key="i" class="rule-item">
+        <span class="rule-num">0{{ i + 1 }}</span>
+        <span>{{ rule }}</span>
+      </li>
+    </ul>
+
+    <button class="start-btn" @click="$emit('start')">
+      <span class="btn-inner">INSERT COIN</span>
+      <span class="btn-shine" />
+    </button>
+
+    <p class="credit">▲ Press to begin ▲</p>
   </div>
 </template>
 
 <script>
 export default {
   name: 'StartScreen',
-
   emits: ['start'],
-};
+  data() {
+    return {
+      rules: [
+        'Read each question carefully.',
+        'Click any answer to lock it in.',
+        'Correct answers revealed instantly.',
+        'Your final score shown at the end.',
+      ],
+    }
+  },
+}
 </script>
 
 <style scoped>
-@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Nunito:wght@400;600;700&display=swap');
-
-/* ── Reset & base ── */
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
-/* ── Container ── */
 .start-screen {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 100vh;
-  background: #0b0c1a;
-  overflow: hidden;
-  font-family: 'Nunito', sans-serif;
-}
-
-/* ── Animated grid background ── */
-.grid-bg {
-  position: absolute;
-  inset: 0;
-  background-image:
-    linear-gradient(rgba(99, 102, 241, 0.07) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(99, 102, 241, 0.07) 1px, transparent 1px);
-  background-size: 48px 48px;
-  animation: gridDrift 20s linear infinite;
-}
-
-@keyframes gridDrift {
-  from { transform: translateY(0); }
-  to   { transform: translateY(48px); }
-}
-
-/* ── Orbs ── */
-.orb {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(80px);
-  opacity: 0.35;
-  pointer-events: none;
-}
-
-.orb-1 {
-  width: 420px;
-  height: 420px;
-  background: radial-gradient(circle, #6366f1, transparent 70%);
-  top: -100px;
-  right: -80px;
-  animation: float 8s ease-in-out infinite;
-}
-
-.orb-2 {
-  width: 320px;
-  height: 320px;
-  background: radial-gradient(circle, #f43f5e, transparent 70%);
-  bottom: -80px;
-  left: -60px;
-  animation: float 10s ease-in-out infinite reverse;
-}
-
-@keyframes float {
-  0%, 100% { transform: translateY(0px) scale(1); }
-  50%       { transform: translateY(-30px) scale(1.05); }
-}
-
-/* ── Content card ── */
-.content {
-  position: relative;
-  z-index: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 20px;
-  text-align: center;
-  padding: 24px;
-  animation: entrance 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+  gap: 2.5rem;
+  width: 100%;
+  max-width: 520px;
+  animation: fadeUp 0.6s ease both;
 }
 
-@keyframes entrance {
-  from { opacity: 0; transform: translateY(28px); }
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(24px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
-/* ── Badge ── */
-.badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background: rgba(99, 102, 241, 0.15);
-  border: 1px solid rgba(99, 102, 241, 0.4);
-  color: #a5b4fc;
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  padding: 6px 16px;
-  border-radius: 999px;
-  animation: entrance 0.7s 0.1s cubic-bezier(0.22, 1, 0.36, 1) both;
+/* ── Logo ─────────────────────────────────────────── */
+.logo-wrap {
+  text-align: center;
+  position: relative;
 }
 
-/* ── Title ── */
-.title {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: clamp(5rem, 18vw, 10rem);
-  line-height: 0.9;
-  letter-spacing: 0.02em;
-  animation: entrance 0.7s 0.2s cubic-bezier(0.22, 1, 0.36, 1) both;
+.logo-glow {
+  position: absolute;
+  inset: -40px;
+  background: radial-gradient(circle, rgba(0,229,255,0.15) 0%, transparent 70%);
+  pointer-events: none;
 }
 
-.title-quiz {
-  color: #f8fafc;
-}
-
-.title-blitz {
-  color: #f43f5e;
+.logo {
+  font-family: var(--font-head);
+  font-size: clamp(1.6rem, 6vw, 2.4rem);
+  color: var(--accent);
   text-shadow:
-    0 0 30px rgba(244, 63, 94, 0.6),
-    0 0 60px rgba(244, 63, 94, 0.3);
+    0 0 10px rgba(0,229,255,0.8),
+    0 0 30px rgba(0,229,255,0.4),
+    0 0 60px rgba(0,229,255,0.15);
+  letter-spacing: 0.05em;
+  line-height: 1;
 }
 
-/* ── Tagline ── */
+.logo-accent {
+  color: var(--accent2);
+  text-shadow:
+    0 0 10px rgba(255,60,172,0.8),
+    0 0 30px rgba(255,60,172,0.4);
+}
+
 .tagline {
-  color: #94a3b8;
-  font-size: clamp(14px, 2.5vw, 17px);
-  font-weight: 600;
-  line-height: 1.7;
-  animation: entrance 0.7s 0.3s cubic-bezier(0.22, 1, 0.36, 1) both;
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin-top: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
 }
 
-/* ── Play button ── */
-.play-btn {
-  display: inline-flex;
+/* ── Rules ────────────────────────────────────────── */
+.rules {
+  list-style: none;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.rule-item {
+  display: flex;
   align-items: center;
-  gap: 10px;
-  margin-top: 12px;
-  padding: 18px 52px;
-  background: #f43f5e;
-  color: #fff;
-  font-family: 'Nunito', sans-serif;
-  font-size: 20px;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
+  gap: 1rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  color: var(--text);
+  animation: fadeUp 0.6s ease both;
+}
+
+.rule-item:nth-child(1) { animation-delay: 0.1s; }
+.rule-item:nth-child(2) { animation-delay: 0.2s; }
+.rule-item:nth-child(3) { animation-delay: 0.3s; }
+.rule-item:nth-child(4) { animation-delay: 0.4s; }
+
+.rule-num {
+  font-family: var(--font-head);
+  font-size: 0.55rem;
+  color: var(--accent);
+  flex-shrink: 0;
+}
+
+/* ── Button ───────────────────────────────────────── */
+.start-btn {
   position: relative;
   overflow: hidden;
-  transition: transform 0.15s, box-shadow 0.15s;
-  box-shadow: 0 8px 32px rgba(244, 63, 94, 0.45);
-  animation: entrance 0.7s 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+  padding: 0;
+  border: 2px solid var(--accent);
+  border-radius: 10px;
+  background: transparent;
+  cursor: pointer;
+  animation: fadeUp 0.6s 0.5s ease both;
+  transition: box-shadow 0.2s ease, transform 0.1s ease;
 }
 
-.play-btn::before {
-  content: '';
+.start-btn:hover {
+  box-shadow: 0 0 24px rgba(0,229,255,0.45), 0 0 60px rgba(0,229,255,0.15);
+  transform: translateY(-2px);
+}
+
+.start-btn:active {
+  transform: translateY(0);
+}
+
+.btn-inner {
+  display: block;
+  padding: 0.9rem 2.5rem;
+  font-family: var(--font-head);
+  font-size: 0.7rem;
+  color: var(--accent);
+  letter-spacing: 0.12em;
+  position: relative;
+  z-index: 1;
+}
+
+.btn-shine {
   position: absolute;
   inset: 0;
-  background: linear-gradient(120deg, transparent 30%, rgba(255,255,255,0.18) 50%, transparent 70%);
+  background: linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.07) 50%, transparent 60%);
   transform: translateX(-100%);
-  transition: transform 0.5s;
+  transition: transform 0.5s ease;
 }
 
-.play-btn:hover {
-  transform: translateY(-3px) scale(1.03);
-  box-shadow: 0 14px 40px rgba(244, 63, 94, 0.55);
-}
-
-.play-btn:hover::before {
+.start-btn:hover .btn-shine {
   transform: translateX(100%);
 }
 
-.play-btn:active {
-  transform: translateY(0) scale(0.97);
-  box-shadow: 0 4px 16px rgba(244, 63, 94, 0.35);
+/* ── Credit ───────────────────────────────────────── */
+.credit {
+  font-family: var(--font-head);
+  font-size: 0.45rem;
+  color: var(--muted);
+  letter-spacing: 0.15em;
+  animation: blink 1.2s step-end infinite;
 }
 
-.play-btn__icon {
-  font-size: 14px;
-  transition: transform 0.2s;
-}
-
-.play-btn:hover .play-btn__icon {
-  transform: translateX(4px);
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
 }
 </style>
