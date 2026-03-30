@@ -59,14 +59,4 @@ export const questions = [
     answers: ['Helium', 'Oxygen', 'Hydrogen', 'Carbon'],
     correct: 2,
   },
-  {
-    question: 'What language is Django written in?',
-    answers: ['Ruby', 'JavaScript', 'Go', 'Python'],
-    correct: 3,
-  },
-  {
-    question: 'How many bones are in the adult human body?',
-    answers: ['196', '206', '216', '226'],
-    correct: 1,
-  },
 ]

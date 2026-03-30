@@ -1,73 +1,86 @@
 <template>
-  <div>
+  <div class="play-view">
+
+    <div class="timer-bar">
+      <div
+        class="timer-fill"
+        :style="{ width: timerPercent + '%' }"
+        :class="{ urgent: store.timeLeft <= 5 }"
+      ></div>
+    </div>
+
+    <p class="progress">
+      Question {{ store.progress.current }} of {{ store.progress.total }}
+    </p>
+
     <QuestionCard
-      v-if="gameState === 'playing'"
-      :question="questions[currentIndex]"
-      :current="currentIndex + 1"
-      :total="questions.length"
-      :score="score"
-      @answer="handleAnswer"
+      v-if="store.gameState === 'playing' && store.currentQuestion"
+      :question="store.currentQuestion"
+      :selectedAnswer="store.selectedAnswer"
+      @answer="store.submitAnswer"
     />
+
     <ScoreBoard
-      v-else-if="gameState === 'end'"
-      :score="score"
-      :total="questions.length"
-      @restart="resetGame"
+      v-else-if="store.gameState === 'end'"
+      :score="store.score"
+      :total="store.questions.length"
+      @restart="handleRestart"
     />
+
   </div>
 </template>
 
 <script>
+import { useGameStore } from '../stores/gameStore.js'
 import QuestionCard from '../components/QuestionCard.vue'
-import ScoreBoard   from '../components/ScoreBoard.vue'
+import ScoreBoard from '../components/ScoreBoard.vue'
 
 export default {
   name: 'PlayView',
-
   components: { QuestionCard, ScoreBoard },
 
-  data() {
-    return {
-      gameState:    'playing',
-      currentIndex: 0,
-      score:        0,
-      questions: [
-        { question: 'Which planet is closest to the Sun?',            answers: ['Venus', 'Earth', 'Mercury', 'Mars'],                         correct: 2 },
-        { question: 'What is the chemical symbol for gold?',          answers: ['Ag', 'Au', 'Fe', 'Gd'],                                      correct: 1 },
-        { question: 'How many sides does a heptagon have?',           answers: ['5', '6', '8', '7'],                                          correct: 3 },
-        { question: 'Who painted the Mona Lisa?',                     answers: ['Michelangelo', 'Raphael', 'Leonardo da Vinci', 'Caravaggio'], correct: 2 },
-        { question: 'What is the largest ocean on Earth?',            answers: ['Atlantic', 'Indian', 'Arctic', 'Pacific'],                   correct: 3 },
-        { question: 'In which year did the Berlin Wall fall?',        answers: ['1987', '1991', '1989', '1993'],                              correct: 2 },
-        { question: 'What is the speed of light (approx.) in km/s?', answers: ['150,000', '300,000', '450,000', '1,000,000'],                 correct: 1 },
-        { question: 'Which element has atomic number 1?',             answers: ['Helium', 'Oxygen', 'Hydrogen', 'Carbon'],                    correct: 2 },
-        { question: 'What language is Django written in?',            answers: ['Ruby', 'JavaScript', 'Go', 'Python'],                        correct: 3 },
-        { question: 'How many bones are in the adult human body?',    answers: ['196', '206', '216', '226'],                                  correct: 1 },
-      ],
-    }
+  setup() {
+    const store = useGameStore()
+    return { store }
   },
 
-  mounted() {
-    this.startGame()
+  computed: {
+    timerPercent() {
+      return (this.store.timeLeft / 15) * 100
+    },
   },
 
   methods: {
-    startGame() {
-      this.currentIndex = 0
-      this.score        = 0
-      this.gameState    = 'playing'
-    },
-
-    handleAnswer(isCorrect) {
-      if (isCorrect) this.score++
-      this.currentIndex++
-      if (this.currentIndex === this.questions.length) {
-        this.gameState = 'end'
-      }
-    },
-
-    resetGame() {
+    handleRestart() {
+      this.store.resetGame()
       this.$router.push({ name: 'home' })
     },
   },
 }
 </script>
+
+<style scoped>
+.timer-bar {
+  width: 100%;
+  height: 8px;
+  background: #333;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+  overflow: hidden;
+}
+.timer-fill {
+  height: 100%;
+  background: #4caf50;
+  transition: width 0.9s linear;
+}
+.timer-fill.urgent {
+  background: #e53935;
+}
+.progress {
+  text-align: center;
+  color: #aaa;
+  margin-bottom: 1rem;
+}
+</style>
+
+
