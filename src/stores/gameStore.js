@@ -7,9 +7,11 @@ export const useGameStore = defineStore('game', {
     currentIndex: 0,
     score: 0,
     selectedAnswer: null,
-    gameState: 'start',   // 'start' | 'playing' | 'end'
+    gameState: 'start',
     timeLeft: 15,
     _timer: null,
+    playerName: '',
+    scoreSubmitted: false,
   }),
 
   getters: {
@@ -25,8 +27,9 @@ export const useGameStore = defineStore('game', {
       this.questions = [...allQuestions]
       this.currentIndex = 0
       this.score = 0
-      this.selectedAnswer = null
       this.gameState = 'playing'
+      this.selectedAnswer = null
+      this.timeLeft = 15
       this._startTimer()
     },
 
@@ -34,11 +37,9 @@ export const useGameStore = defineStore('game', {
       if (this.selectedAnswer !== null) return
       this.selectedAnswer = answerIndex
       this._stopTimer()
-
       if (answerIndex === this.currentQuestion.correct) {
         this.score++
       }
-
       setTimeout(() => this._advance(), 1000)
     },
 
@@ -50,6 +51,8 @@ export const useGameStore = defineStore('game', {
       this.selectedAnswer = null
       this.gameState = 'start'
       this.timeLeft = 15
+      this.playerName = ''
+      this.scoreSubmitted = false
     },
 
     _startTimer() {
@@ -83,3 +86,5 @@ export const useGameStore = defineStore('game', {
     },
   },
 })
+
+

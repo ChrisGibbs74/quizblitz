@@ -60,27 +60,37 @@ export default {
 </script>
 
 <style scoped>
+.play-view {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 620px;
+}
+
 .timer-bar {
   width: 100%;
-  height: 8px;
-  background: #333;
+  height: 6px;
+  background: var(--border);
   border-radius: 4px;
   margin-bottom: 1rem;
   overflow: hidden;
 }
+
 .timer-fill {
   height: 100%;
-  background: #4caf50;
+  background: var(--correct);
   transition: width 0.9s linear;
 }
+
 .timer-fill.urgent {
-  background: #e53935;
+  background: var(--wrong);
 }
+
 .progress {
   text-align: center;
-  color: #aaa;
-  margin-bottom: 1rem;
+  color: var(--muted);
+  font-family: var(--font-body);
+  margin-bottom: 1.5rem;
 }
 </style>
-
-
