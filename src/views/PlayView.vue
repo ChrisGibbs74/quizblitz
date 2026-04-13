@@ -20,12 +20,22 @@
       @answer="store.submitAnswer"
     />
 
-    <ScoreBoard
-      v-else-if="store.gameState === 'end'"
-      :score="store.score"
-      :total="store.questions.length"
-      @restart="handleRestart"
-    />
+    <div v-else-if="store.gameState === 'end'" class="end-wrapper">
+      <ScoreBoard
+        :score="store.score"
+        :total="store.questions.length"
+        @restart="handleRestart"
+      />
+      <div v-if="!store.scoreSubmitted" class="submit-score">
+        <input
+          v-model="store.playerName"
+          placeholder="Enter your name"
+          class="name-input"
+        />
+        <button class="submit-btn" @click="store.submitScore()">Submit Score</button>
+      </div>
+      <p v-else class="submitted">Score submitted! ✓</p>
+    </div>
 
   </div>
 </template>
@@ -92,5 +102,52 @@ export default {
   color: var(--muted);
   font-family: var(--font-body);
   margin-bottom: 1.5rem;
+}
+
+.end-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  width: 100%;
+}
+
+.submit-score {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+}
+
+.name-input {
+  padding: 0.6rem 1rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+}
+
+.submit-btn {
+  padding: 0.6rem 1.25rem;
+  border-radius: 8px;
+  border: 2px solid var(--accent);
+  background: transparent;
+  color: var(--accent);
+  font-family: var(--font-head);
+  font-size: 0.6rem;
+  cursor: pointer;
+  letter-spacing: 0.1em;
+  transition: background 0.2s ease;
+}
+
+.submit-btn:hover {
+  background: rgba(0,229,255,0.08);
+}
+
+.submitted {
+  color: var(--correct);
+  font-family: var(--font-body);
+  font-size: 0.95rem;
 }
 </style>
