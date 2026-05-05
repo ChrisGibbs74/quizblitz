@@ -26,15 +26,18 @@
         :total="store.questions.length"
         @restart="handleRestart"
       />
-      <div v-if="!store.scoreSubmitted" class="submit-score">
-        <input
-          v-model="store.playerName"
-          placeholder="Enter your name"
-          class="name-input"
-        />
-        <button class="submit-btn" @click="store.submitScore()">Submit Score</button>
+      <div v-if="store.token">
+        <p class="playing-as">Playing as {{ store.userEmail }}</p>
+        <button v-if="!store.scoreSubmitted" class="submit-btn" @click="store.submitScore()">
+          Submit Score
+        </button>
+        <p v-else class="submitted">Score submitted ✓</p>
       </div>
-      <p v-else class="submitted">Score submitted! ✓</p>
+      <div v-else>
+        <p class="login-prompt">
+          <RouterLink to="/login">Log in</RouterLink> to save your score to the leaderboard.
+        </p>
+      </div>
     </div>
 
   </div>
@@ -112,20 +115,12 @@ export default {
   width: 100%;
 }
 
-.submit-score {
-  display: flex;
-  gap: 0.75rem;
-  justify-content: center;
-}
-
-.name-input {
-  padding: 0.6rem 1rem;
-  border-radius: 8px;
-  border: 1px solid var(--border);
-  background: var(--surface);
-  color: var(--text);
+.playing-as {
+  text-align: center;
+  color: var(--muted);
   font-family: var(--font-body);
-  font-size: 0.95rem;
+  font-size: 0.9rem;
+  margin-bottom: 0.75rem;
 }
 
 .submit-btn {
@@ -149,5 +144,17 @@ export default {
   color: var(--correct);
   font-family: var(--font-body);
   font-size: 0.95rem;
+  text-align: center;
+}
+
+.login-prompt {
+  text-align: center;
+  color: var(--muted);
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+}
+
+.login-prompt a {
+  color: var(--accent);
 }
 </style>

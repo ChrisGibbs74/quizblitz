@@ -7,6 +7,10 @@
       <div class="nav-links">
         <RouterLink to="/">Home</RouterLink>
         <RouterLink to="/leaderboard">Leaderboard</RouterLink>
+        <RouterLink v-if="!store.token" to="/login">Login</RouterLink>
+        <RouterLink v-if="!store.token" to="/register">Register</RouterLink>
+        <span v-if="store.token" class="nav-user">{{ store.userEmail }}</span>
+        <button v-if="store.token" class="nav-logout" @click="store.logout()">Logout</button>
       </div>
     </nav>
 
@@ -17,8 +21,13 @@
 </template>
 
 <script>
+import { useGameStore } from './stores/gameStore.js'
+
 export default {
   name: 'App',
+  setup() {
+    return { store: useGameStore() }
+  }
 }
 </script>
 
@@ -57,7 +66,6 @@ html, body {
     var(--bg);
 }
 
-/* ── Scanlines ────────────────────────────────────── */
 .scanlines {
   pointer-events: none;
   position: fixed;
@@ -70,7 +78,6 @@ html, body {
   );
 }
 
-/* ── Nav ──────────────────────────────────────────── */
 .nav {
   display: flex;
   align-items: center;
@@ -100,6 +107,7 @@ html, body {
 .nav-links {
   display: flex;
   gap: 1.5rem;
+  align-items: center;
 }
 
 .nav-links a {
@@ -124,7 +132,28 @@ html, body {
   text-shadow: 0 0 8px rgba(0,229,255,0.4);
 }
 
-/* ── Main content area ────────────────────────────── */
+.nav-user {
+  font-family: var(--font-head);
+  font-size: 0.45rem;
+  color: var(--accent);
+}
+
+.nav-logout {
+  font-family: var(--font-head);
+  font-size: 0.45rem;
+  color: var(--muted);
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.4rem 0.75rem;
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+
+.nav-logout:hover {
+  color: var(--wrong);
+}
+
 .main {
   flex: 1;
   display: flex;
@@ -133,9 +162,3 @@ html, body {
   padding: 1.5rem;
 }
 </style>
-
-
-
-
-
-
